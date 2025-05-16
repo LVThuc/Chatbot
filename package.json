@@ -10,8 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "19.0.0-rc-8b08e99e-20240713",
-    "react-dom": "19.0.0-rc-8b08e99e-20240713",
+    "@clerk/nextjs": "^6.19.4",
+    "react": "^19.0.0-rc-de68d2f4-20241204",
+    "react-dom": "^19.0.0-rc-de68d2f4-20241204",
     "react-router-dom": "^7.6.0"
   },
   "devDependencies": {

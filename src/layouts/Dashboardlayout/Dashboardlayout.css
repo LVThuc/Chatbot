@@ -1,0 +1,17 @@
+.dashboardlayout {
+  display: flex;
+  gap: 50px;
+  padding-top: 20px;
+  height: 100%;
+  .menu{
+    flex:1;
+  }
+  .content {
+    flex:4;
+    background-color: #f5fbff;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+}
