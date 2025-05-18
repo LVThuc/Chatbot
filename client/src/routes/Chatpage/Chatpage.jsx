@@ -1,18 +1,26 @@
-import NewPrompt from '../../components/NewPrompt/NewPrompt'
-import './Chatpage.css'
-import { useQuery } from '@tanstack/react-query'
+import NewPrompt from '../../components/NewPrompt/NewPrompt';
+import './Chatpage.css';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from "@clerk/clerk-react";
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom';
 import { IKImage } from "imagekitio-react";
+import { MathJax, MathJaxContext } from "better-react-mathjax";
 import Markdown from 'react-markdown';
 import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import 'katex/dist/katex.min.css';
+import rehypeMathjax from 'rehype-mathjax';
+
+const mathJaxConfig = {
+  loader: { load: ["[tex]/require"] },
+  tex: {
+    packages: { "[+]": ["require"] },
+    inlineMath: [["$", "$"], ["\\(", "\\)"]],
+    displayMath: [["$$", "$$"], ["\\[", "\\]"]],
+  },
+};
+
 const Chatpage = () => {
-
-  const path = useLocation().pathname
-  const chatId = path.split('/').pop()
-
+  const path = useLocation().pathname;
+  const chatId = path.split('/').pop();
   const { getToken } = useAuth();
 
   const { isPending, error, data } = useQuery({
@@ -28,43 +36,45 @@ const Chatpage = () => {
     },
   });
 
-  console.log(data);
-
   return (
-    <div className='Chatpage'>
-      <div className="wrapper">
-        <div className="chat">
-          {isPending ? "loading..." : error ? "error" : data?.history?.map((message, i) => (
-            <>
-              {message.img && (
-                <IKImage
-                  urlEndpoint={import.meta.env.VITE_IMAGE_KIT_ENDPOINT}
-                  path={message.img}
-                  height="300"
-                  width="400"
-                  transformation={[{ height: 300, width: 400, crop: "at_max" }]}
-                  loading="lazy"
-                  lqip={{ active: true, quality: 20 }}
-                />
-              )}
-              <div
-                className={
-                  message.role === "user" ? "message user" : "message"} key={i}>
-                <Markdown
-                  remarkPlugins={[remarkMath]}
-                  rehypePlugins={[rehypeKatex]}
+    <MathJaxContext version={3} config={mathJaxConfig}>
+      <div className='Chatpage'>
+        <div className="wrapper">
+          <div className="chat">
+            {isPending ? "loading..." : error ? "error" : data?.history?.map((message, i) => (
+              <>
+                {message.img && (
+                  <IKImage
+                    urlEndpoint={import.meta.env.VITE_IMAGE_KIT_ENDPOINT}
+                    path={message.img}
+                    height="300"
+                    width="400"
+                    transformation={[{ height: 300, width: 400, crop: "at_max" }]}
+                    loading="lazy"
+                    lqip={{ active: true, quality: 20 }}
+                  />
+                )}
+                <div
+                  className={
+                    message.role === "user" ? "message user" : "message"
+                  }
+                  key={i}
                 >
-                  {message.parts[0].text}
-                </Markdown>
-              </div>
-            </>
-          ))}
-
-          {data && <NewPrompt data={data} />}
+                  <Markdown
+                    remarkPlugins={[remarkMath]}
+                    rehypePlugins={[rehypeMathjax]}
+                  >
+                    {message.parts[0].text}
+                  </Markdown>
+                </div>
+              </>
+            ))}
+            {data && <NewPrompt data={data} />}
+          </div>
         </div>
       </div>
-    </div>
-  )
-}
+    </MathJaxContext>
+  );
+};
 
-export default Chatpage
+export default Chatpage;

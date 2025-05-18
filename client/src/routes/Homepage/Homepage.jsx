@@ -17,8 +17,8 @@ const Homepage = () => {
     <div className='Homepage'>
       <img src="/orbital.png" alt="" className='orbital' />
       <div className="left">
-        <h1>MATH AI</h1>
-        <h2>Math Made Simple</h2>
+        <h1>YOUR AI</h1>
+        <h2>A Friendly Companion</h2>
         <h3>Presented by Lê Văn Thức.
         </h3>
         <Link to="/dashboard">Get Started</Link>

@@ -43,7 +43,7 @@ const mutation = useMutation({
       <div className="texts">
         <div className="logo">
           <img src="/logo.png" alt="" />
-          <h1>MATH AI</h1>
+          <h1>YOUR AI</h1>
         </div>
         <div className="options">
           <div className="option">

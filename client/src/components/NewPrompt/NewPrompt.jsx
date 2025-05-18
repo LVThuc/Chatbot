@@ -7,8 +7,8 @@ import Markdown from "react-markdown"
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from "@clerk/clerk-react";
 import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import 'katex/dist/katex.min.css';
+import rehypeMathjax from 'rehype-mathjax';
+
 const NewPrompt = ({ data }) => {
 
   const [question, setQuestion] = useState("");
@@ -76,10 +76,9 @@ const NewPrompt = ({ data }) => {
     }
   });
 
-  const add = async (text , isInitial) => {
-    if(!isInitial) setQuestion(text);
+  const add = async (text, isInitial) => {
+    if (!isInitial) setQuestion(text);
     try {
-      // Get the real chat history for Gemini context
       const token = await getToken();
       const updatedChat = await fetch(`${import.meta.env.VITE_API_URL}/api/chats/${data._id}`, {
         credentials: 'include',
@@ -101,8 +100,11 @@ const NewPrompt = ({ data }) => {
         accumulatedText += chunkText;
         setAnswer(accumulatedText);
       }
-      // Save both user and AI message in one PUT
-      mutation.mutate({ question: text, answer: accumulatedText, img: img.dbData.filePath || undefined });
+      if (!isInitial) {
+        mutation.mutate({ question: text, answer: accumulatedText, img: img.dbData.filePath || undefined });
+      } else {
+        mutation.mutate({ question: undefined, answer: accumulatedText, img: img.dbData.filePath || undefined });
+      }
     } catch (err) {
       console.log(err);
     }
@@ -115,24 +117,21 @@ const NewPrompt = ({ data }) => {
     if (!text) return;
 
     add(text, false)
-
-
   }
+
   const hasRun = useRef(false);
 
-  // useEffect(() => {
-  //   if(!hasRun.current)
-  //   {
-  //     if(data?.history?.length === 1) {
-  //       add(data?.history[0]?.parts[0]?.text, true);
-  //     }
-  //   }
-  //   hasRun.current = true;
-  // },[])
+  useEffect(() => {
+    if (!hasRun.current) {
+      if (data?.history?.length === 1) {
+        add(data?.history[0]?.parts[0]?.text, true);
+      }
+    }
+    hasRun.current = true;
+  }, [])
 
   return (
     <>
-      {/* ADD NEW CHAT */}
       {img.isLoading && <div className=''>Loading...</div>}
       {img.dbData?.filePath && (
         <IKImage
@@ -151,14 +150,14 @@ const NewPrompt = ({ data }) => {
         answer && <div className='message'>
           <Markdown
             remarkPlugins={[remarkMath]}
-            rehypePlugins={[rehypeKatex]}
+            rehypePlugins={[rehypeMathjax]}
           >
             {answer}
           </Markdown>
         </div>
       }
       <div className="endChat" ref={endRef}></div>
-      <form className='newForm' onSubmit={handleSubmit} ref ={formRef}>
+      <form className='newForm' onSubmit={handleSubmit} ref={formRef}>
         <Upload setImg={setImg} />
         <input id="file" type="file" multiple={false} hidden />
         <input type="text" name="text" placeholder='Ask anything...' />
