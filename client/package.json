@@ -13,11 +13,15 @@
     "@clerk/nextjs": "^6.19.4",
     "@google/genai": "^0.14.1",
     "@google/generative-ai": "^0.24.1",
+    "@tanstack/react-query": "^5.76.1",
     "imagekitio-react": "^4.3.0",
+    "katex": "^0.16.22",
     "react": "^19.0.0-rc-de68d2f4-20241204",
     "react-dom": "^19.0.0-rc-de68d2f4-20241204",
     "react-markdown": "^10.1.0",
-    "react-router-dom": "^7.6.0"
+    "react-router-dom": "^7.6.0",
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",

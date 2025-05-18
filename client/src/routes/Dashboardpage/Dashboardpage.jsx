@@ -1,26 +1,41 @@
+import { use } from 'react';
 import './Dashboardpage.css'
 import {useAuth} from "@clerk/clerk-react"
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom';
 const Dashboardpage = () => {
 
+  const navigate = useNavigate();
+  const { getToken } = useAuth();
+  const queryClient = useQueryClient();
 
-  const { userId, getToken } = useAuth();
+const mutation = useMutation({
+  mutationFn: async (text) => {
+    const token = await getToken();
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/chats`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify({ text }),
+    });
+    const data = await res.json();
+    return data.id; // Use the id property
+  },
+  onSuccess: (id) => {
+    queryClient.invalidateQueries({ queryKey: ['userChats'] });
+    navigate(`/dashboard/chats/${id}`);
+  }
+});
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const text = e.target.text.value;
     if (!text) return;
 
-    const token = await getToken();
-    await fetch("http://localhost:3000/api/chats", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`, // <-- Add this line
-      },
-      body: JSON.stringify({
-        text,
-      }),
-    });
+    mutation.mutate(text);
   };
 
   return (
